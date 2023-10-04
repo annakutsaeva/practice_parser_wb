@@ -28,8 +28,6 @@ class ParseWB:
                 f'https://catalog.wb.ru/sellers/catalog?dest=-8144270&supplier={self.seller_id}&page={_page}',
             )
             _page += 1
-            #items_info = Items.parse_obj(response.json()['data'])
-            #items_info = Items.parse_raw
             items_info = Items.model_validate(response.json()['data'])
             if not items_info.products:
                 break
@@ -43,11 +41,12 @@ class ParseWB:
                              'название',
                              'цена',
                              'бренд',
-                             'скидка',
+                             'количество оценок',
                              'рейтинг',
+                             'скидка',
                              'в наличии',
                              'id продавца',
-                             'image']) #передаем список столбцов
+                             'image'])
 
     def __save_csv(self, items):
         with open("wb_seller.csv", mode='a', newline='', encoding='utf-8') as file:
@@ -57,8 +56,9 @@ class ParseWB:
                                  product.name,
                                  product.salePriceU,
                                  product.brand,
+                                 product.feedbacks,
+                                 product.reviewRating,
                                  product.sale,
-                                 product.rating,
                                  product.volume,
                                  product.supplierId,
                                  product.image_links])
@@ -105,4 +105,3 @@ class ParseWB:
 
 if __name__ == "__main__":
     ParseWB('https://www.wildberries.ru/catalog/101786933/detail.aspx').parse()
-

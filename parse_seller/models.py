@@ -1,5 +1,4 @@
-# 'id', 'название', 'цена', 'бренд', 'продаж', 'рейтинг', 'в наличии'
-from pydantic import BaseModel, root_validator, model_validator
+from pydantic import BaseModel, field_validator
 
 
 class Item(BaseModel):
@@ -7,28 +6,18 @@ class Item(BaseModel):
     name: str
     salePriceU: float
     brand: str
+    feedbacks: int
+    reviewRating: float
     sale: int
-    rating: int
     volume: int
     supplierId: int
     pics: int
     image_links: str = None
 
-    @model_validator(mode='before')
-    def convert_sale_price(cls, values: dict):
-        sale_price = values.get("salePriceU")
+    @field_validator('salePriceU')
+    def convert_sale_price(cls, sale_price: int) -> float:
         if sale_price:
-            values["salePriceU"] = sale_price / 100
-        return values
-
-    """
-    @root_validator(pre=True) #True чтобы сработал перед другими валидаторами
-        def convert_sale_price(cls, values: dict):
-            sale_price = values.get("salePriceU")
-            if sale_price:
-                values["salePriceU"] = sale_price/100
-            return values
-    """
+            return sale_price / 100
 
 
 class Items(BaseModel):
